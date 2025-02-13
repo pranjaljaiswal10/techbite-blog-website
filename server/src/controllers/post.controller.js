@@ -1,13 +1,24 @@
 import { Post } from "../models/post.model";
+import uploadOnCloudinary from "../utils/cloudinary";
 
 const addPostsInDB = async (req, res) => {
-  const { thumbnail, title, content, category } = req.body;
-  if (
-    [thumbnail, title, content, category].some((field) => field.trim() === "")
-  ) {
+  const { title, content, category } = req.body;
+  const author = req.user._id;
+  if (!req.file) {
+    res.status(400).json({ error: "no file uploaded" });
+  }
+  if ([title, content, category].some((field) => field.trim() === "")) {
     res.status(400).json({ message: "All field is required" });
   }
-  const data = { thumbnail, title, content, category };
+  const thumbnail = await uploadOnCloudinary(req.file.path);
+
+  const data = {
+    thumbnail: thumbnail?.secure_url,
+    title,
+    content,
+    category,
+    author,
+  };
   if (req.body.tag) {
     data.tag = req.body.tag;
   }
@@ -18,7 +29,7 @@ const addPostsInDB = async (req, res) => {
 };
 
 const getAllPostFromDB = async (req, res) => {
-  const post = await Post.find({});
+  const post = await Post.find({}).populate("author","fullname");
   if (!post) {
     res.status(404).json({ error: "no post found" });
   }
@@ -27,7 +38,7 @@ const getAllPostFromDB = async (req, res) => {
 
 const getOnePostFromDB = async (req, res) => {
   const { postId } = req.params;
-  const post = await Post.findById(postId);
+  const post = await Post.findById(postId).populate("author","fullname");
   if (!post) {
     res.status(404).json({ error: " post not found" });
   }
@@ -35,10 +46,10 @@ const getOnePostFromDB = async (req, res) => {
 };
 
 const updatePostInDB = async (req, res) => {
-  const postId = req.params;
+  const {id} = req.params;
   const { content } = req.body;
   const post = await Post.findByIdAndUpdate(
-    postId,
+    id,
     {
       $set: { content },
     },
@@ -51,8 +62,8 @@ const updatePostInDB = async (req, res) => {
 };
 
 const deletePostFromDB = async (req, res) => {
-  const { postId } = req.params;
-  const post = await Post.findByIdAndDelete(postId);
+  const { id } = req.params;
+  const post = await Post.findByIdAndDelete(id);
   if (!post) {
     res.status(404).json({ error: "Post not found" });
   }

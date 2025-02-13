@@ -4,10 +4,15 @@ const postSchema = new mongoose.Schema({
   thumbnail: {
     type: String,
     unique: true,
+    
   },
   title: {
     type: String,
     required: true,
+  },
+  authorId:{
+    type:mongoose.Schema.Types.ObjectId,
+    ref:"User"
   },
   content: {
     type: String,

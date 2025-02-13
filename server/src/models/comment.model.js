@@ -1,10 +1,19 @@
 import mongoose from "mongoose";
+import { User } from "./user.model";
 
 const commentSchema = new mongoose.Schema(
   {
-    userImage: {
+    postId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
+    },
+    authorImage: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
+    },
+    authorName: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref:User,
     },
     content: {
       type: String,

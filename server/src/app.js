@@ -1,5 +1,6 @@
 import express from "express";
 import dotenv from "dotenv";
+import cors from "cors"
 import connectDB from "./db/index.js";
 import { userRouter } from "./routes/user.route.js";
 import cookieParser from "cookie-parser";
@@ -14,6 +15,10 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(cors({
+  origin:process.env.CORS_ORIGIN,
+  crredentials:true
+}))
 app.use("/api/users", userRouter);
 app.use("/api/blogs", postRouter);
 app.use("/api/comments", commentRouter);

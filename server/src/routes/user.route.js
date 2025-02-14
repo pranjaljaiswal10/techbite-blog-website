@@ -1,12 +1,14 @@
-import express from "express";
-import { loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
+import { Router } from "express";
+import {
+  loginUser,
+  logoutUser,
+  registerUser,
+} from "../controllers/user.controller.js";
+import { upload } from "../middleware/multer.middleware.js";
 
-const userRouter=express.Router()
+const userRouter = Router();
 
-userRouter.post("/register",registerUser)
-//http//:localhost:3000/api/users/register
-userRouter.post("/login",loginUser)
-
-userRouter.post("/logout",logoutUser)
-export {userRouter}
-
+userRouter.route("/register").post(upload.single("profilePic"), registerUser);
+userRouter.route("/login").post(loginUser);
+userRouter.route("/logout").post(logoutUser);
+export { userRouter };

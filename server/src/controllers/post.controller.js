@@ -1,5 +1,5 @@
-import { Post } from "../models/post.model";
-import uploadOnCloudinary from "../utils/cloudinary";
+import { Post } from "../models/post.model.js";
+import uploadOnCloudinary from "../utils/cloudinary.js";
 
 const addPostsInDB = async (req, res) => {
   const { title, content, category } = req.body;
@@ -29,7 +29,9 @@ const addPostsInDB = async (req, res) => {
 };
 
 const getAllPostFromDB = async (req, res) => {
-  const post = await Post.find({}).populate("author","fullname");
+  const post = await Post.find({})
+    .populate("author", "fullname")
+    .sort({ createdAt: -1 });
   if (!post) {
     res.status(404).json({ error: "no post found" });
   }
@@ -38,7 +40,7 @@ const getAllPostFromDB = async (req, res) => {
 
 const getOnePostFromDB = async (req, res) => {
   const { postId } = req.params;
-  const post = await Post.findById(postId).populate("author","fullname");
+  const post = await Post.findById(postId).populate("author", "fullname");
   if (!post) {
     res.status(404).json({ error: " post not found" });
   }
@@ -46,7 +48,7 @@ const getOnePostFromDB = async (req, res) => {
 };
 
 const updatePostInDB = async (req, res) => {
-  const {id} = req.params;
+  const { id } = req.params;
   const { content } = req.body;
   const post = await Post.findByIdAndUpdate(
     id,

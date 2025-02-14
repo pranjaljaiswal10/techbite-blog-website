@@ -1,9 +1,15 @@
 import { User } from "../models/user.model.js";
 import bcrypt from "bcrypt";
+import uploadOnCloudinary from "../utils/cloudinary.js";
 
 const registerUser = async (req, res) => {
   try {
     const { username, fullname, email, password } = req.body;
+    if(!req.file){
+      res.status(400).json({message:"no data is provided"})
+    }
+    const result=await uploadOnCloudinary(req.file.path)
+
     if (
       [username, fullname, email, password].some((field) => field?.trim() === "")
     ) {
@@ -19,6 +25,7 @@ const registerUser = async (req, res) => {
       fullname,
       email,
       password: hashPassword,
+      avatar:result?.secure_url
     });
     const savedUser = await newUser.save();
     const token = savedUser.getJWT();

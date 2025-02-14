@@ -21,7 +21,12 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: [true, "password is required"],
     },
-    profilePicture: {
+    role: {
+      type: String,
+      enum: ["admin", "user"],
+      default: "user",
+    },
+    avatar: {
       type: String,
       default:
         "https://static.vecteezy.com/system/resources/thumbnails/002/318/271/small_2x/user-profile-icon-free-vector.jpg",
@@ -38,10 +43,10 @@ userSchema.methods.validatePassword = async function (passwordByUser) {
 
 userSchema.getJWT = function () {
   const user = this;
-  const token = jwt.sign({userId:user._id}, process.env.TOKEN_SECRET_KEY, {
+  const token = jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET_KEY, {
     expiresIn: "1d",
   });
-  return token
+  return token;
 };
 
 export const User = mongoose.model("User", userSchema);

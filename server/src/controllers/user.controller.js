@@ -5,13 +5,15 @@ import uploadOnCloudinary from "../utils/cloudinary.js";
 const registerUser = async (req, res) => {
   try {
     const { username, fullname, email, password } = req.body;
-    if(!req.file){
-      res.status(400).json({message:"no data is provided"})
+    if (!req.file) {
+      res.status(400).json({ message: "no data is provided" });
     }
-    const result=await uploadOnCloudinary(req.file.path)
+    const result = await uploadOnCloudinary(req.file.path);
 
     if (
-      [username, fullname, email, password].some((field) => field?.trim() === "")
+      [username, fullname, email, password].some(
+        (field) => field?.trim() === ""
+      )
     ) {
       res.status(400).json({ messge: "All field is required" });
     }
@@ -19,13 +21,13 @@ const registerUser = async (req, res) => {
     if (findUser) {
       res.status(409).json({ message: "User is already exist" });
     }
-    const hashPassword =await  bcrypt.hash(password, 10);
+    const hashPassword = await bcrypt.hash(password, 10);
     const newUser = new User({
       username,
       fullname,
       email,
       password: hashPassword,
-      avatar:result?.secure_url
+      avatar: result?.secure_url,
     });
     const savedUser = await newUser.save();
     const token = savedUser.getJWT();
@@ -33,17 +35,20 @@ const registerUser = async (req, res) => {
       secret: true,
       httpOnly: true,
     };
-    res
+    res.cookie("token", token, option)
       .status(201)
-      .json({ mesage: "Your account is created", data: { user: savedUser } })
-      .cookie("token", token, option);
+      .json({
+        mesage: "Your account is created",
+        data: { user: savedUser, token },
+      })
+      
   } catch (err) {
-    res.status(401).send({ error: err });
+    res.status(500).send({ error: err.stack });
   }
 };
 
 const loginUser = async (req, res) => {
-  const { username, email, password } = req.Body;
+  const {username,email, password } = req.body;
   if ([email, password].some((field) => field.trim() === "")) {
     res.status(400).json({ message: "All field is required" });
   }
@@ -63,10 +68,10 @@ const loginUser = async (req, res) => {
     secure: true,
     httpOnly: true,
   };
-  res
+  res.cookie("token", token, option)
     .status(200)
-    .json({ message: "Login sucessfully", data: user })
-    .cookie("token", token, option);
+    .json({ message: "Login sucessfully", data: user,token })
+    
 };
 
 const logoutUser = async (req, res) => {

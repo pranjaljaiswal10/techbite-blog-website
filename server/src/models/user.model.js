@@ -7,10 +7,16 @@ const userSchema = new mongoose.Schema(
     username: {
       type: String,
       required: true,
+      unique:true,
+      trime:true,
+      lowercase:true
     },
     fullname: {
       type: String,
       required: true,
+      trim:true,
+      min:3,
+      max:15
     },
     email: {
       type: String,
@@ -41,9 +47,9 @@ userSchema.methods.validatePassword = async function (passwordByUser) {
   return validPassword;
 };
 
-userSchema.getJWT = function () {
+userSchema.methods.getJWT = function () {
   const user = this;
-  const token = jwt.sign({ userId: user._id }, process.env.TOKEN_SECRET_KEY, {
+  const token = jwt.sign({ _id: user._id }, process.env.TOKEN_SECRET_KEY, {
     expiresIn: "1d",
   });
   return token;

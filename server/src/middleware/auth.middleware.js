@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { User } from "../models/user.model";
+import { User } from "../models/user.model.js";
 
 const verifyJWT = async (req, res, next) => {
   try {
@@ -9,8 +9,8 @@ const verifyJWT = async (req, res, next) => {
       res.status(401).jsom("Unauthorized access");
     }
     const decode = jwt.verify(token, process.env.TOKEN_SECRET_KEY);
-    const { userId } = decode;
-    const user = await User.findById(userId);
+    const { _id } = decode;
+    const user = await User.findById(_id);
     if (!user) {
       res.status(404).json({ message: "User not found" });
     }

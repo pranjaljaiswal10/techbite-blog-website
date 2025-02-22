@@ -4,12 +4,13 @@ const Header = () => {
   return (
     <nav>
      <div className="logo">
-        <img src="./public/techbite.png" alt="" />
+        <img src="/techbite.png" alt="" />
      </div>
      <ul>
-        <li><input type="text" /></li>
+        <li><input type="text" placeholder="Search..."/></li>
         <li><Link to="/Home"></Link></li>
-        <li>Add post</li>
+        <li>Explore Blogs</li>
+        <li>Post blog</li>
         <li>logout</li>
      </ul>
     </nav>

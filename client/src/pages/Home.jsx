@@ -1,29 +1,32 @@
-import { useEffect, useState } from "react"
-import { BASE_URL } from "../utils/constant"
+import { useEffect, useState } from "react";
 
 const Home = () => {
-  const [allPost,setAllPost]=useState([])
- async function getAllPost(){
-    const response=await fetch(`${BASE_URL}/blogs`)
-    const json=await response.json()
-    setAllPost(json.data)
+  const [allPost, setAllPost] = useState(null);
+  async function getAllPost() {
+    try{
+    const response = await fetch(`http://localhost:3000/api/blogs`);
+    const json = await response.json();
+    console.log(json)
+    setAllPost(json.data);
   }
-  useEffect(()=>{
-   getAllPost()
-  },[])
+  catch(err){
+    console.log(err)
+  }
+}
+  useEffect(() => {
+    getAllPost();
+  }, []);
   return (
     <>
-     {
-      allPost.map(item=>(
+      {allPost?.map((item) => (
         <div key={item._id}>
-          <img src="" alt="" />
+          <img src={item?.thumbnail} alt="" />
           <h1>{item.title}</h1>
           <span>{item.tags.join(",")}</span>
         </div>
-      ))
-     }
+      ))}
     </>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
